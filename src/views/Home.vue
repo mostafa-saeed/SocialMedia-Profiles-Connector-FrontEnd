@@ -1,18 +1,23 @@
 <template>
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <p v-if="user">Hello {{ user.username }}</p>
+    <scanner />
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue';
+import Scanner from '@/components/Scanner.vue';
 
 export default {
   name: 'Home',
   components: {
-    HelloWorld,
+    Scanner,
   },
+
+  data: () => ({
+    token: localStorage.getItem('token'),
+    user: JSON.parse(localStorage.getItem('user')),
+  }),
 };
 </script>
