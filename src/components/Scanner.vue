@@ -5,8 +5,16 @@
     <input type="file" @change="selectFile">
 
     <p>Take a photo</p>
-    <button @click="startStream">Open Camera</button>
-    <button @click="captureImage">Capture</button>
+    <p>Found: {{ devices.length }} devices</p>
+    <button v-if="!stream" @click="startStream">Open Camera</button>
+    <button v-if="stream" @click="captureImage">Capture</button>
+
+    <select v-model="currentDevice">
+      <option v-for="(device, index) in devices" :key="index" :value="device.deviceId">
+        {{ device.label }}
+      </option>
+    </select>
+    <hr>
     <video autoplay v-if="stream" :srcObject.prop="stream"></video>
   </div>
 </template>
@@ -42,6 +50,8 @@ export default {
   data: () => ({
     photo: {},
     stream: false,
+    devices: 0,
+    currentDevice: 0,
   }),
 
   methods: {
@@ -57,9 +67,16 @@ export default {
 
     async startStream(e) {
       e.preventDefault();
+      // Stop current stream
+      if (this.stream) {
+        const track = this.stream.getVideoTracks()[0];
+        track.stop();
+        this.stream = false;
+      }
 
-      // const devices = await navigator.mediaDevices.enumerateDevices();
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { deviceId: this.currentDevice },
+      });
       this.stream = stream;
     },
 
@@ -81,6 +98,15 @@ export default {
 
       console.log('testing', result);
     },
+  },
+
+  async beforeCreate() {
+    // Get all available devices
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    // Only keep video devices
+    this.devices = devices.filter((device) => device.kind === 'videoinput');
+    const [device] = this.devices;
+    this.currentDevice = device.deviceId;
   },
 };
 </script>
