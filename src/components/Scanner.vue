@@ -5,12 +5,12 @@
     <input type="file" @change="selectFile">
 
     <p>Take a photo</p>
-    <p>Found: {{ devices.length }} devices</p>
+    <p v-if="devices">Found: {{ devices.length }} devices</p>
     <button v-if="!stream" @click="startStream">Open Camera</button>
     <button v-if="stream" @click="stopStream">Stop Camera</button>
     <button v-if="stream" @click="captureImage">Capture</button>
 
-    <select v-model="currentDevice" @change="changeDevice">
+    <select v-if="devices" v-model="currentDevice" @change="changeDevice">
       <option v-for="(device, index) in devices" :key="index" :value="device.deviceId">
         {{ device.label }}
       </option>
@@ -71,6 +71,10 @@ export default {
         video: { deviceId: this.currentDevice },
       });
       this.stream = stream;
+      // Load devices
+      if (!this.devices) {
+        await this.loadDevices();
+      }
     },
 
     async stopStream(e) {
@@ -80,11 +84,11 @@ export default {
       this.stream = false;
     },
 
-    changeDevice(e) {
+    async changeDevice(e) {
       e.preventDefault();
       if (this.stream) {
-        this.stopStream(e);
-        this.startStream(e);
+        await this.stopStream(e);
+        await this.startStream(e);
       }
     },
 
@@ -100,15 +104,25 @@ export default {
 
       console.log('testing', result);
     },
+
+    async loadDevices() {
+      // Get all available devices
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      // Only keep video devices
+      this.devices = devices.filter((device) => device.kind === 'videoinput');
+      if (this.devices.length > 0) {
+        const [device] = this.devices;
+        this.currentDevice = device.deviceId;
+      }
+    },
+
   },
 
   async beforeCreate() {
-    // Get all available devices
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    // Only keep video devices
-    this.devices = devices.filter((device) => device.kind === 'videoinput');
-    const [device] = this.devices;
-    this.currentDevice = device.deviceId;
+    const { state } = await navigator.permissions.query({ name: 'camera' });
+    if (state === 'granted') {
+      await this.loadDevices();
+    }
   },
 };
 </script>
