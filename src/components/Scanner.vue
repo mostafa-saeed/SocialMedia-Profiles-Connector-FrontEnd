@@ -7,9 +7,10 @@
     <p>Take a photo</p>
     <p>Found: {{ devices.length }} devices</p>
     <button v-if="!stream" @click="startStream">Open Camera</button>
+    <button v-if="stream" @click="stopStream">Stop Camera</button>
     <button v-if="stream" @click="captureImage">Capture</button>
 
-    <select v-model="currentDevice">
+    <select v-model="currentDevice" @change="changeDevice">
       <option v-for="(device, index) in devices" :key="index" :value="device.deviceId">
         {{ device.label }}
       </option>
@@ -23,27 +24,27 @@
 import jsQR from 'jsqr';
 
 const fileReader = new FileReader();
-const image = new Image();
+const img = new Image();
 const canvas = document.createElement('canvas');
 const context = canvas.getContext('2d');
 
-const readFile = (file) => new Promise((resolve) => {
+const readImage = (file) => new Promise((resolve) => {
   fileReader.onload = (e) => {
-    resolve(e.target.result);
+    const { result: urlData } = e.target;
+    img.onload = () => {
+      resolve(img);
+    };
+    img.src = urlData;
   };
   fileReader.readAsDataURL(file);
 });
 
-const getImageData = (urlData) => new Promise((resolve) => {
-  image.onload = () => {
-    canvas.width = image.width;
-    canvas.height = image.height;
-    context.drawImage(image, 0, 0, canvas.width, canvas.height);
-    resolve(context.getImageData(0, 0, canvas.width, canvas.height));
-  };
-
-  image.src = urlData;
-});
+const getImageData = (image) => {
+  canvas.width = image.width;
+  canvas.height = image.height;
+  context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  return context.getImageData(0, 0, canvas.width, canvas.height);
+};
 
 export default {
   name: 'Scanner',
@@ -58,43 +59,44 @@ export default {
     async selectFile(e) {
       e.preventDefault();
       const [file] = e.target.files;
-
-      this.photo = await readFile(file);
-      const { data, width, height } = await getImageData(this.photo);
+      const image = await readImage(file);
+      const { data, width, height } = getImageData(image);
       const result = jsQR(data, width, height);
       console.log('testing', result);
     },
 
     async startStream(e) {
       e.preventDefault();
-      // Stop current stream
-      if (this.stream) {
-        const track = this.stream.getVideoTracks()[0];
-        track.stop();
-        this.stream = false;
-      }
-
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { deviceId: this.currentDevice },
       });
       this.stream = stream;
     },
 
+    async stopStream(e) {
+      e.preventDefault();
+      const [track] = this.stream.getVideoTracks();
+      track.stop();
+      this.stream = false;
+    },
+
+    changeDevice(e) {
+      e.preventDefault();
+      if (this.stream) {
+        this.stopStream(e);
+        this.startStream(e);
+      }
+    },
+
     async captureImage(e) {
       e.preventDefault();
-
-      // console.log('testing', this.stream.getVideoTracks()[0].getSettings());
-      const track = this.stream.getVideoTracks()[0];
+      const [track] = this.stream.getVideoTracks();
       const imageCapture = new ImageCapture(track);
       const frame = await imageCapture.grabFrame();
 
-      canvas.width = frame.width;
-      canvas.height = frame.height;
-      context.drawImage(frame, 0, 0, canvas.width, canvas.height);
-      const { data, width, height } = context.getImageData(0, 0, canvas.width, canvas.height);
+      const { data, width, height } = getImageData(frame);
       const result = jsQR(data, width, height);
-      track.stop();
-      this.stream = false;
+      this.stopStream(e);
 
       console.log('testing', result);
     },
