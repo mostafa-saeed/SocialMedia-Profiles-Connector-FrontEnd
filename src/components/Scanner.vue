@@ -8,7 +8,6 @@
     <p v-if="devices">Found: {{ devices.length }} devices</p>
     <button v-if="!stream" @click="startStream">Open Camera</button>
     <button v-if="stream" @click="stopStream">Stop Camera</button>
-    <button v-if="stream" @click="captureImage">Capture</button>
 
     <select v-if="devices" v-model="currentDevice" @change="changeDevice">
       <option v-for="(device, index) in devices" :key="index" :value="device.deviceId">
@@ -75,6 +74,24 @@ export default {
       if (!this.devices) {
         await this.loadDevices();
       }
+
+      this.startTimer(e);
+    },
+
+    startTimer(e) {
+      // Auto detect QR code
+      this.interval = setInterval(async () => {
+        const result = await this.captureFrame();
+        if (result) {
+          this.stopStream(e);
+          console.log('RESULT', result);
+        }
+      }, 500);
+
+      // Auto stop stream after 5 seconds
+      this.timeout = setTimeout(async () => {
+        this.stopStream(e);
+      }, 5000);
     },
 
     async stopStream(e) {
@@ -82,6 +99,11 @@ export default {
       const [track] = this.stream.getVideoTracks();
       track.stop();
       this.stream = false;
+      // Clear interval
+      clearInterval(this.interval);
+      clearTimeout(this.timeout);
+      this.interval = 0;
+      this.timeout = 0;
     },
 
     async changeDevice(e) {
@@ -92,17 +114,13 @@ export default {
       }
     },
 
-    async captureImage(e) {
-      e.preventDefault();
+    async captureFrame() {
       const [track] = this.stream.getVideoTracks();
       const imageCapture = new ImageCapture(track);
       const frame = await imageCapture.grabFrame();
 
       const { data, width, height } = getImageData(frame);
-      const result = jsQR(data, width, height);
-      this.stopStream(e);
-
-      console.log('testing', result);
+      return jsQR(data, width, height);
     },
 
     async loadDevices() {
