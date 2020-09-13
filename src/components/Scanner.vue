@@ -2,20 +2,31 @@
   <div>
     <h2>Scanner</h2>
     <p>Upload a file</p>
-    <input type="file" @change="selectFile">
+    <!-- <input type="file" @change="selectFile"> -->
+    <md-field>
+      <label>Single</label>
+      <md-file md-change="selectFile" />
+    </md-field>
 
     <p>Take a photo</p>
     <p v-if="devices">Found: {{ devices.length }} devices</p>
-    <button v-if="!stream" @click="startStream">Open Camera</button>
-    <button v-if="stream" @click="stopStream">Stop Camera</button>
+    <md-button class="md-primary" @click="startStream">Open Camera</md-button>
 
-    <select v-if="devices" v-model="currentDevice" @change="changeDevice">
-      <option v-for="(device, index) in devices" :key="index" :value="device.deviceId">
-        {{ device.label }}
-      </option>
-    </select>
-    <hr>
-    <video autoplay v-if="stream" :srcObject.prop="stream"></video>
+    <md-dialog :md-active="!!stream">
+      <md-dialog-title>Camera Scan</md-dialog-title>
+      <select v-if="devices" v-model="currentDevice" @change="changeDevice">
+        <option v-for="(device, index) in devices" :key="index" :value="device.deviceId">
+          {{ device.label }}
+        </option>
+      </select>
+
+      <video autoplay v-if="stream" :srcObject.prop="stream"></video>
+
+      <md-dialog-actions>
+        <md-button class="md-primary" @click="stopStream">Stop Camera</md-button>
+      </md-dialog-actions>
+    </md-dialog>
+
   </div>
 </template>
 
