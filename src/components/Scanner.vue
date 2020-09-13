@@ -45,6 +45,13 @@ const getImageData = (image) => {
   return context.getImageData(0, 0, canvas.width, canvas.height);
 };
 
+const loadFileError = () => {
+  alert('Could not load this file');
+};
+
+fileReader.onerror = loadFileError;
+img.onerror = loadFileError;
+
 export default {
   name: 'Scanner',
   data: () => ({
@@ -61,21 +68,29 @@ export default {
       const image = await readImage(file);
       const { data, width, height } = getImageData(image);
       const result = jsQR(data, width, height);
-      console.log('testing', result);
+      if (result) {
+        alert(result.data);
+      } else {
+        alert('No QR was found');
+      }
     },
 
     async startStream(e) {
       e.preventDefault();
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { deviceId: this.currentDevice },
-      });
-      this.stream = stream;
-      // Load devices
-      if (!this.devices) {
-        await this.loadDevices();
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { deviceId: this.currentDevice },
+        });
+        this.stream = stream;
+        // Load devices
+        if (!this.devices) {
+          await this.loadDevices();
+        }
+        this.startTimer(e);
+      } catch (error) {
+        console.error(error);
+        alert('Could not start stream');
       }
-
-      this.startTimer(e);
     },
 
     startTimer(e) {
@@ -84,13 +99,14 @@ export default {
         const result = await this.captureFrame();
         if (result) {
           this.stopStream(e);
-          console.log('RESULT', result);
+          alert(result.data);
         }
       }, 500);
 
       // Auto stop stream after 5 seconds
       this.timeout = setTimeout(async () => {
         this.stopStream(e);
+        alert('No QR was found');
       }, 5000);
     },
 
