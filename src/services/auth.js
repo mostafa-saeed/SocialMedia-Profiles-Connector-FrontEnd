@@ -12,9 +12,7 @@ export const setAuthentication = (token, user) => {
   localStorage.setItem('user', JSON.stringify(user));
 };
 
-export const logOut = (to, from, next) => {
+export const removeAuthentication = () => {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
-
-  return next();
 };

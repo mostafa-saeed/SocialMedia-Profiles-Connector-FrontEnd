@@ -12,7 +12,6 @@
 
 <script>
 import sendRequest from '@/services/api';
-import setAuthentication from '@/services/auth';
 
 export default {
   name: 'Register',
@@ -32,7 +31,7 @@ export default {
           username, email, password,
         });
 
-        setAuthentication(token, user);
+        this.$parent.login(token, user);
 
         this.$router.push({ name: 'Home' });
       } catch (error) {

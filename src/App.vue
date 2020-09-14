@@ -2,9 +2,10 @@
   <div id="app">
     <div id="nav">
       <router-link to="/">Home</router-link> |
-      <router-link to="/profile">Profile</router-link> |
-      <router-link to="/login">Login</router-link> |
-      <router-link to="/register">Register</router-link>
+      <router-link v-if="token" to="/profile">Profile</router-link> |
+      <a href="#" v-if="token" @click="logout">Logout</a>
+      <router-link v-if="!token" to="/login">Login</router-link> |
+      <router-link v-if="!token" to="/register">Register</router-link>
     </div>
     <router-view :token="token" :user="user" />
   </div>
@@ -34,16 +35,29 @@
 </style>
 
 <script>
-import { getToken, getUser } from './services/auth';
+import {
+  getToken, getUser, removeAuthentication, setAuthentication,
+} from './services/auth';
 
 export default {
-  data: () => {
-    const token = getToken();
-    const user = getUser();
-    return {
-      token,
-      user,
-    };
+  data: () => ({
+    token: getToken(),
+    user: getUser(),
+  }),
+
+  methods: {
+    logout() {
+      this.token = null;
+      this.user = null;
+      removeAuthentication();
+      this.$router.push({ name: 'Home' });
+    },
+
+    login(token, user) {
+      this.token = token;
+      this.user = user;
+      setAuthentication(token, user);
+    },
   },
 };
 </script>
