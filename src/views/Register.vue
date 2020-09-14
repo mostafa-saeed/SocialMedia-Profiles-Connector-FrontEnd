@@ -12,6 +12,7 @@
 
 <script>
 import sendRequest from '@/services/api';
+import setAuthentication from '@/services/auth';
 
 export default {
   name: 'Register',
@@ -22,11 +23,6 @@ export default {
     repassword: '',
   }),
 
-  beforeCreate() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-  },
-
   methods: {
     async submit(e) {
       e.preventDefault();
@@ -36,8 +32,7 @@ export default {
           username, email, password,
         });
 
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
+        setAuthentication(token, user);
 
         this.$router.push({ name: 'Home' });
       } catch (error) {

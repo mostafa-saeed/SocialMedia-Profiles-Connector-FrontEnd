@@ -13,9 +13,13 @@ export default {
     user: false,
   }),
 
-  async beforeCreate() {
+  props: {
+    username: String,
+  },
+
+  async created() {
     try {
-      const { username } = this.$route.params;
+      const { username } = this.$route.params.username ? this.$route.params : this;
       this.user = await sendRequest('GET', `users/${username}`);
     } catch (error) {
       alert(error);
