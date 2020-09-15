@@ -1,6 +1,6 @@
 <template>
-  <div v-if="user">
-    <h2>{{ user.username }} profile</h2>
+  <div v-if="userProfile">
+    <h2>{{ userProfile.username }} profile</h2>
   </div>
 </template>
 
@@ -10,17 +10,17 @@ import sendRequest from '@/services/api';
 export default {
   name: 'Profile',
   data: () => ({
-    user: false,
+    userProfile: false,
   }),
 
   props: {
-    username: String,
+    user: Object,
   },
 
   async created() {
     try {
-      const { username } = this.$route.params.username ? this.$route.params : this;
-      this.user = await sendRequest('GET', `users/${username}`);
+      const { username } = this.$route.params.username ? this.$route.params : this.user;
+      this.userProfile = await sendRequest('GET', `users/${username}`);
     } catch (error) {
       alert(error);
       this.$router.push({ name: 'Home' });

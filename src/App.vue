@@ -50,7 +50,7 @@ export default {
       this.token = null;
       this.user = null;
       removeAuthentication();
-      this.$router.push({ name: 'Home' });
+      this.$router.push({ name: 'Login' });
     },
 
     login(token, user) {

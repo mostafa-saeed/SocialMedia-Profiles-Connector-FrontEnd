@@ -5,7 +5,7 @@ import Register from '../views/Register.vue';
 import Login from '../views/Login.vue';
 import Profile from '../views/Profile.vue';
 
-import { getUser, requireAuthentication } from '../services/auth';
+import { requireAuthentication } from '../services/auth';
 
 Vue.use(VueRouter);
 
@@ -28,9 +28,6 @@ const routes = [
   {
     path: '/profile',
     name: 'UserProfile',
-    props: () => ({
-      username: getUser().username,
-    }),
     beforeEnter: requireAuthentication,
     component: Profile,
   },
