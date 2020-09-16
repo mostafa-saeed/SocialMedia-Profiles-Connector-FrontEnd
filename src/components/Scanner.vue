@@ -19,7 +19,7 @@
 
         <md-field>
           <label for="currentDevice">Select Your Camera</label>
-          <md-select id="currentDevice" v-model="currentDevice" @change="changeDevice">
+          <md-select id="currentDevice" v-model="currentDevice" @md-selected="changeDevice">
             <md-option v-for="(device, index) in devices" :key="index" :value="device.deviceId">
               {{ device.label }}
             </md-option>
@@ -106,8 +106,7 @@ export default {
       }
     },
 
-    async startStream(e) {
-      e.preventDefault();
+    async startStream() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { deviceId: this.currentDevice },
@@ -117,26 +116,25 @@ export default {
         if (!this.devices) {
           await this.loadDevices();
         }
-        this.startTimer(e);
+        this.startTimer();
       } catch (error) {
         console.error(error);
         alert('Could not start stream');
       }
     },
 
-    startTimer(e) {
+    startTimer() {
       // Auto detect QR code
       this.interval = setInterval(async () => {
         const result = await this.captureFrame();
         if (result) {
-          this.stopStream(e);
+          this.stopStream();
           alert(result.data);
         }
       }, 500);
     },
 
-    async stopStream(e) {
-      e.preventDefault();
+    async stopStream() {
       const [track] = this.stream.getVideoTracks();
       track.stop();
       this.stream = false;
@@ -145,11 +143,10 @@ export default {
       this.interval = 0;
     },
 
-    async changeDevice(e) {
-      e.preventDefault();
+    async changeDevice() {
       if (this.stream) {
-        await this.stopStream(e);
-        await this.startStream(e);
+        await this.stopStream();
+        await this.startStream();
       }
     },
 
