@@ -2,10 +2,10 @@
   <div>
     <h2>Scanner</h2>
     <p>Upload a file</p>
-    <!-- <input type="file" @change="selectFile"> -->
+
     <md-field>
       <label>Single</label>
-      <md-file md-change="selectFile" />
+      <md-file @md-change="selectFile" />
     </md-field>
 
     <p>Take a photo</p>
@@ -92,9 +92,10 @@ export default {
   }),
 
   methods: {
-    async selectFile(e) {
-      e.preventDefault();
-      const [file] = e.target.files;
+    async selectFile(files) {
+      const [file] = files;
+      if (!file) return;
+
       const image = await readImage(file);
       const { data, width, height } = getImageData(image);
       const result = jsQR(data, width, height);
