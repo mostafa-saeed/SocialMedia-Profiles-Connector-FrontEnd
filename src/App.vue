@@ -66,7 +66,7 @@
 }
 
 .md-content {
-  min-height: calc(100vh - 72px);
+  min-height: calc(100vh - 64px);
 }
 
 @media (max-width: 960px) {

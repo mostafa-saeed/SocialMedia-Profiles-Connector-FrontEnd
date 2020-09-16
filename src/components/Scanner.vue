@@ -17,13 +17,14 @@
 
       <md-dialog-content>
 
-        <p>Select Your Camera:
-          <select v-if="devices" v-model="currentDevice" @change="changeDevice">
-            <option v-for="(device, index) in devices" :key="index" :value="device.deviceId">
+        <md-field>
+          <label for="currentDevice">Select Your Camera</label>
+          <md-select id="currentDevice" v-model="currentDevice" @change="changeDevice">
+            <md-option v-for="(device, index) in devices" :key="index" :value="device.deviceId">
               {{ device.label }}
-            </option>
-          </select>
-        </p>
+            </md-option>
+          </md-select>
+        </md-field>
 
         <video autoplay v-if="stream" :srcObject.prop="stream"></video>
 
@@ -131,12 +132,6 @@ export default {
           alert(result.data);
         }
       }, 500);
-
-      // Auto stop stream after 5 seconds
-      this.timeout = setTimeout(async () => {
-        this.stopStream(e);
-        alert('No QR was found');
-      }, 5000);
     },
 
     async stopStream(e) {
@@ -146,9 +141,7 @@ export default {
       this.stream = false;
       // Clear interval
       clearInterval(this.interval);
-      clearTimeout(this.timeout);
       this.interval = 0;
-      this.timeout = 0;
     },
 
     async changeDevice(e) {
