@@ -19,28 +19,28 @@
             </md-list-item>
           </router-link>
 
-          <router-link to="/profile" exact>
+          <router-link v-if="token" to="/profile" exact>
             <md-list-item>
               <md-icon>home</md-icon>
               <span class="md-list-item-text">Profile</span>
             </md-list-item>
           </router-link>
 
-          <a href="#">
+          <a v-if="token" @click="logout">
             <md-list-item>
               <md-icon>home</md-icon>
               <span class="md-list-item-text">Logout</span>
             </md-list-item>
           </a>
 
-          <router-link to="/login" exact>
+          <router-link v-if="!token" to="/login" exact>
             <md-list-item>
               <md-icon>home</md-icon>
               <span class="md-list-item-text">Login</span>
             </md-list-item>
           </router-link>
 
-          <router-link to="/register" exact>
+          <router-link v-if="!token" to="/register" exact>
             <md-list-item>
               <md-icon>home</md-icon>
               <span class="md-list-item-text">Register</span>

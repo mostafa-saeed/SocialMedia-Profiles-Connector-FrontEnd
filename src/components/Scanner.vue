@@ -10,25 +10,43 @@
 
     <p>Take a photo</p>
     <p v-if="devices">Found: {{ devices.length }} devices</p>
-    <md-button class="md-primary" @click="startStream">Open Camera</md-button>
+    <md-button class="md-primary md-raised" @click="startStream">Open Camera</md-button>
 
-    <md-dialog :md-active="!!stream">
+    <md-dialog :md-active="!!stream" :md-fullscreen="true">
       <md-dialog-title>Camera Scan</md-dialog-title>
-      <select v-if="devices" v-model="currentDevice" @change="changeDevice">
-        <option v-for="(device, index) in devices" :key="index" :value="device.deviceId">
-          {{ device.label }}
-        </option>
-      </select>
 
-      <video autoplay v-if="stream" :srcObject.prop="stream"></video>
+      <md-dialog-content>
+
+        <p>Select Your Camera:
+          <select v-if="devices" v-model="currentDevice" @change="changeDevice">
+            <option v-for="(device, index) in devices" :key="index" :value="device.deviceId">
+              {{ device.label }}
+            </option>
+          </select>
+        </p>
+
+        <video autoplay v-if="stream" :srcObject.prop="stream"></video>
+
+      </md-dialog-content>
 
       <md-dialog-actions>
         <md-button class="md-primary" @click="stopStream">Stop Camera</md-button>
       </md-dialog-actions>
+
     </md-dialog>
 
   </div>
 </template>
+
+<style scoped>
+.md-dialog {
+  text-align: center;
+}
+
+.md-dialog video {
+  height: 300px;
+}
+</style>
 
 <script>
 import jsQR from 'jsqr';
