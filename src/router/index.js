@@ -5,6 +5,8 @@ import Register from '../views/Register.vue';
 import Login from '../views/Login.vue';
 import Profile from '../views/Profile.vue';
 
+import { requireAuthentication } from '../services/auth';
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -24,7 +26,13 @@ const routes = [
     component: Login,
   },
   {
-    path: '/profile/:username',
+    path: '/profile',
+    name: 'UserProfile',
+    beforeEnter: requireAuthentication,
+    component: Profile,
+  },
+  {
+    path: '/:username',
     name: 'Profile',
     component: Profile,
   },

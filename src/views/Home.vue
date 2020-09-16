@@ -11,13 +11,12 @@ import Scanner from '@/components/Scanner.vue';
 
 export default {
   name: 'Home',
+  props: {
+    token: String,
+    user: Object,
+  },
   components: {
     Scanner,
   },
-
-  data: () => ({
-    token: localStorage.getItem('token'),
-    user: JSON.parse(localStorage.getItem('user')),
-  }),
 };
 </script>

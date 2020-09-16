@@ -19,6 +19,20 @@
             </md-list-item>
           </router-link>
 
+          <router-link to="/profile" exact>
+            <md-list-item>
+              <md-icon>home</md-icon>
+              <span class="md-list-item-text">Profile</span>
+            </md-list-item>
+          </router-link>
+
+          <a href="#">
+            <md-list-item>
+              <md-icon>home</md-icon>
+              <span class="md-list-item-text">Logout</span>
+            </md-list-item>
+          </a>
+
           <router-link to="/login" exact>
             <md-list-item>
               <md-icon>home</md-icon>
@@ -38,7 +52,7 @@
 
       <md-app-content>
         <!-- Content -->
-        <router-view/>
+        <router-view :token="token" :user="user" />
       </md-app-content>
 
     </md-app>
@@ -69,9 +83,30 @@
 </style>
 
 <script>
+import {
+  getToken, getUser, removeAuthentication, setAuthentication,
+} from './services/auth';
+
 export default {
   data: () => ({
+    token: getToken(),
+    user: getUser(),
     menuVisible: false,
   }),
+
+  methods: {
+    logout() {
+      this.token = null;
+      this.user = null;
+      removeAuthentication();
+      this.$router.push({ name: 'Login' });
+    },
+
+    login(token, user) {
+      this.token = token;
+      this.user = user;
+      setAuthentication(token, user);
+    },
+  },
 };
 </script>

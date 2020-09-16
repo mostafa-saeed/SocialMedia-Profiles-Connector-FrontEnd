@@ -18,11 +18,6 @@ export default {
     password: '',
   }),
 
-  beforeCreate() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-  },
-
   methods: {
     async submit(e) {
       e.preventDefault();
@@ -32,8 +27,7 @@ export default {
           login, password,
         });
 
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
+        this.$parent.login(token, user);
 
         this.$router.push({ name: 'Home' });
       } catch (error) {

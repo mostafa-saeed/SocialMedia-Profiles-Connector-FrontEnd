@@ -1,3 +1,5 @@
+import { getToken } from './auth';
+
 const { VUE_APP_API_ENDPOINT } = process.env;
 
 export default async (method, path, data) => {
@@ -6,7 +8,7 @@ export default async (method, path, data) => {
     body: JSON.stringify(data),
     headers: {
       'Content-Type': 'application/json',
-      Authorization: localStorage.getItem('token'),
+      Authorization: getToken(),
     },
   });
 
