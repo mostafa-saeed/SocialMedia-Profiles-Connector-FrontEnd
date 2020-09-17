@@ -1,84 +1,92 @@
 <template>
-  <div class="page-container">
-    <md-app md-mode="reveal">
-      <md-app-toolbar class="md-primary">
-        <md-button class="md-icon-button" @click="menuVisible = !menuVisible">
-          <md-icon>menu</md-icon>
-        </md-button>
-        <span class="md-title">SocialMedia Profile Connector</span>
-      </md-app-toolbar>
+  <v-app>
+    <v-navigation-drawer
+      v-model="drawer"
+      app
+    >
+      <v-list dense>
 
-      <md-app-drawer :md-active.sync="menuVisible">
-        <md-toolbar class="md-transparent" md-elevation="0">Menu</md-toolbar>
+        <v-list-item link to="/">
+          <v-list-item-action>
+            <v-icon>mdi-home</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Home</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
 
-        <md-list>
-          <router-link to="/" exact>
-            <md-list-item>
-              <md-icon>home</md-icon>
-              <span class="md-list-item-text">Home</span>
-            </md-list-item>
-          </router-link>
+        <v-list-item v-if="token" link to="/profile" exact>
+          <v-list-item-action>
+            <v-icon>mdi-email</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Profile</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
 
-          <router-link v-if="token" to="/profile" exact>
-            <md-list-item>
-              <md-icon>home</md-icon>
-              <span class="md-list-item-text">Profile</span>
-            </md-list-item>
-          </router-link>
+        <v-list-item v-if="token" @click="logout">
+          <v-list-item-action>
+            <v-icon>mdi-email</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Logout</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
 
-          <a v-if="token" @click="logout">
-            <md-list-item>
-              <md-icon>home</md-icon>
-              <span class="md-list-item-text">Logout</span>
-            </md-list-item>
-          </a>
+        <v-list-item v-if="!token" link to="/login" exact>
+          <v-list-item-action>
+            <v-icon>mdi-email</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Login</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
 
-          <router-link v-if="!token" to="/login" exact>
-            <md-list-item>
-              <md-icon>home</md-icon>
-              <span class="md-list-item-text">Login</span>
-            </md-list-item>
-          </router-link>
+        <v-list-item v-if="!token" link to="/register" exact>
+          <v-list-item-action>
+            <v-icon>mdi-email</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Register</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
 
-          <router-link v-if="!token" to="/register" exact>
-            <md-list-item>
-              <md-icon>home</md-icon>
-              <span class="md-list-item-text">Register</span>
-            </md-list-item>
-          </router-link>
+      </v-list>
 
-        </md-list>
-      </md-app-drawer>
+    </v-navigation-drawer>
 
-      <md-app-content>
-        <!-- Content -->
-        <router-view :token="token" :user="user" />
-      </md-app-content>
+    <v-app-bar
+      app
+      color="indigo"
+      dark
+    >
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-toolbar-title>Application</v-toolbar-title>
+    </v-app-bar>
 
-    </md-app>
-  </div>
+    <v-main>
+      <v-container
+        class="fill-height"
+        fluid
+      >
+        <v-row
+          align="center"
+          justify="center"
+        >
+          <v-col class="text-center">
+            <router-view :token="token" :user="user" />
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-main>
+
+  </v-app>
+
 </template>
 
 <style>
-.md-drawer {
-  width: 230px;
-  max-width: calc(100vw - 125px);
-}
-
-.md-content {
-  min-height: calc(100vh - 64px);
-}
-
-@media (max-width: 960px) {
-  .md-content {
-    min-height: calc(100vh - 48px);
-  }
-}
-
-@media (max-width: 600px) {
-  .md-content {
-    min-height: calc(100vh - 56px);
-  }
+html {
+  overflow: auto !important;
 }
 </style>
 
@@ -88,10 +96,12 @@ import {
 } from './services/auth';
 
 export default {
+  name: 'App',
+
   data: () => ({
+    drawer: false,
     token: getToken(),
     user: getUser(),
-    menuVisible: false,
   }),
 
   methods: {
@@ -99,14 +109,21 @@ export default {
       this.token = null;
       this.user = null;
       removeAuthentication();
+
       this.$router.push({ name: 'Login' });
     },
-
     login(token, user) {
       this.token = token;
       this.user = user;
       setAuthentication(token, user);
+
+      this.$router.push({ name: 'Home' });
     },
   },
+
+  created() {
+    this.$root.login = this.login;
+  },
+
 };
 </script>

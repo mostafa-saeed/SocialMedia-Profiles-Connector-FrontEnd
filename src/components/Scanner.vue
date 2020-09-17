@@ -1,51 +1,61 @@
 <template>
   <div>
     <h2>Scanner</h2>
-    <p>Upload a file</p>
 
-    <md-field>
-      <label>Single</label>
-      <md-file @md-change="selectFile" />
-    </md-field>
+    <v-file-input
+      placeholder="Upload an image"
+      @change="selectFile"
+      :chips="true"
+      :show-size="true" />
 
-    <p>Take a photo</p>
-    <p v-if="devices">Found: {{ devices.length }} devices</p>
-    <md-button class="md-primary md-raised" @click="startStream">Open Camera</md-button>
+    <p>Camera Scan</p>
 
-    <md-dialog :md-active="!!stream" :md-fullscreen="true">
-      <md-dialog-title>Camera Scan</md-dialog-title>
+    <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
+      <template v-slot:activator="{}">
+        <v-btn
+          color="primary"
+          dark
+          @click="startStream">
+          Open Camera
+        </v-btn>
+      </template>
 
-      <md-dialog-content>
+      <v-card>
 
-        <md-field>
-          <label for="currentDevice">Select Your Camera</label>
-          <md-select id="currentDevice" v-model="currentDevice" @md-selected="changeDevice">
-            <md-option v-for="(device, index) in devices" :key="index" :value="device.deviceId">
-              {{ device.label }}
-            </md-option>
-          </md-select>
-        </md-field>
+        <v-toolbar dark color="primary">
 
-        <video autoplay v-if="stream" :srcObject.prop="stream"></video>
+          <v-btn icon dark @click="stopStream">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+          <v-toolbar-title>Settings</v-toolbar-title>
 
-      </md-dialog-content>
+        </v-toolbar>
 
-      <md-dialog-actions>
-        <md-button class="md-primary" @click="stopStream">Stop Camera</md-button>
-      </md-dialog-actions>
+        <v-list three-line subheader>
+          <v-list-item>
+            <v-list-item-content>
+              <v-select label="Select Your Camera" v-model="currentDevice" :items=devices />
+            </v-list-item-content>
+          </v-list-item>
 
-    </md-dialog>
+          <v-list-item>
+            <v-list-item-content>
+              <video autoplay v-if="stream" :srcObject.prop="stream" />
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+
+      </v-card>
+    </v-dialog>
 
   </div>
 </template>
 
 <style scoped>
-.md-dialog {
-  text-align: center;
-}
 
-.md-dialog video {
-  height: 300px;
+video {
+  width: 100%;
+  max-height: 400px;
 }
 </style>
 
@@ -85,15 +95,15 @@ img.onerror = loadFileError;
 export default {
   name: 'Scanner',
   data: () => ({
-    photo: {},
     stream: false,
-    devices: 0,
-    currentDevice: 0,
+    devices: null,
+    currentDevice: null,
+
+    dialog: false,
   }),
 
   methods: {
-    async selectFile(files) {
-      const [file] = files;
+    async selectFile(file) {
       if (!file) return;
 
       const image = await readImage(file);
@@ -112,6 +122,7 @@ export default {
           video: { deviceId: this.currentDevice },
         });
         this.stream = stream;
+        this.dialog = true;
         // Load devices
         if (!this.devices) {
           await this.loadDevices();
@@ -138,6 +149,7 @@ export default {
       const [track] = this.stream.getVideoTracks();
       track.stop();
       this.stream = false;
+      this.dialog = false;
       // Clear interval
       clearInterval(this.interval);
       this.interval = 0;
@@ -163,10 +175,16 @@ export default {
       // Get all available devices
       const devices = await navigator.mediaDevices.enumerateDevices();
       // Only keep video devices
-      this.devices = devices.filter((device) => device.kind === 'videoinput');
+      this.devices = devices
+        .filter((device) => device.kind === 'videoinput')
+        .map((device) => ({
+          text: device.label,
+          value: device.deviceId,
+        }));
+
       if (this.devices.length > 0) {
         const [device] = this.devices;
-        this.currentDevice = device.deviceId;
+        this.currentDevice = device.value;
       }
     },
 
@@ -178,5 +196,6 @@ export default {
       await this.loadDevices();
     }
   },
+
 };
 </script>

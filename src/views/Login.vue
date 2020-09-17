@@ -27,9 +27,7 @@ export default {
           login, password,
         });
 
-        this.$parent.$parent.$parent.$parent.login(token, user);
-
-        this.$router.push({ name: 'Home' });
+        this.$root.login(token, user);
       } catch (error) {
         alert(error);
       }

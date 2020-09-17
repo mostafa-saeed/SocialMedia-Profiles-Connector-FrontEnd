@@ -1,17 +1,14 @@
 import Vue from 'vue';
-import VueMaterial from 'vue-material';
-import 'vue-material/dist/vue-material.min.css';
-import 'vue-material/dist/theme/default.css';
 
 import App from './App.vue';
 import './registerServiceWorker';
 import router from './router';
+import vuetify from './plugins/vuetify';
 
 Vue.config.productionTip = false;
 
-Vue.use(VueMaterial);
-
 new Vue({
   router,
+  vuetify,
   render: (h) => h(App),
 }).$mount('#app');
