@@ -34,7 +34,12 @@
         <v-list three-line subheader>
           <v-list-item>
             <v-list-item-content>
-              <v-select label="Select Your Camera" v-model="currentDevice" :items=devices />
+              <v-select
+                label="Select Your Camera"
+                v-model="currentDevice"
+                :items=devices
+                @change="changeDevice"
+              />
             </v-list-item-content>
           </v-list-item>
 
