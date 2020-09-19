@@ -1,9 +1,18 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <p v-if="user">Hello {{ user.username }}</p>
-    <scanner />
-  </div>
+  <v-row
+    align="center"
+    justify="center"
+  >
+    <v-col class="text-center">
+
+      <div class="home">
+        <img alt="Vue logo" src="../assets/logo.png">
+        <p v-if="user">Hello {{ user.username }}</p>
+        <scanner />
+      </div>
+
+    </v-col>
+  </v-row>
 </template>
 
 <script>

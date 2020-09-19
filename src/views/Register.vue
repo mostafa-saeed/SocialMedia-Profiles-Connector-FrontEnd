@@ -1,13 +1,67 @@
 <template>
-  <div>
-    <form>
-      <input type="text" v-model="username" placeholder="username">
-      <input type="email" v-model="email" placeholder="email">
-      <input type="password" v-model="password" autocomplete="password" placeholder="password">
-      <input type="password" v-model="repassword" autocomplete="password" placeholder="repassword">
-      <button @click="submit">Submit</button>
-    </form>
-  </div>
+  <v-row
+    align="center"
+    justify="center"
+  >
+    <v-col
+      cols="12"
+      sm="8"
+      md="4"
+    >
+      <v-card class="elevation-12">
+        <v-toolbar
+          color="primary"
+          dark
+          flat
+        >
+          <v-toolbar-title>Register</v-toolbar-title>
+          <v-spacer></v-spacer>
+        </v-toolbar>
+        <v-card-text>
+          <v-form>
+            <v-text-field
+              label="Username"
+              name="username"
+              prepend-icon="mdi-account"
+              type="text"
+              v-model="username"
+            ></v-text-field>
+
+            <v-text-field
+              label="Email"
+              name="email"
+              prepend-icon="mdi-email"
+              type="email"
+              v-model="email"
+            ></v-text-field>
+
+            <v-text-field
+              id="password"
+              label="Password"
+              name="password"
+              prepend-icon="mdi-lock"
+              type="password"
+              v-model="password"
+            ></v-text-field>
+
+            <v-text-field
+              id="repassword"
+              label="Retype Password"
+              name="repassword"
+              prepend-icon="mdi-lock"
+              type="password"
+              v-model="repassword"
+            ></v-text-field>
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" @click="submit">Register</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-col>
+  </v-row>
+
 </template>
 
 <script>

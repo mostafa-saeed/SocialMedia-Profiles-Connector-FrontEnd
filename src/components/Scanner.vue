@@ -1,9 +1,12 @@
 <template>
-  <div>
+  <v-row align="center" justify="center" >
+    <v-col cols="6" sm="6" md="6">
+
     <h2>Scanner</h2>
 
     <v-file-input
       placeholder="Upload an image"
+      prepend-icon="mdi-camera"
       @change="selectFile"
       :chips="true"
       :show-size="true" />
@@ -27,7 +30,7 @@
           <v-btn icon dark @click="stopStream">
             <v-icon>mdi-close</v-icon>
           </v-btn>
-          <v-toolbar-title>Settings</v-toolbar-title>
+          <v-toolbar-title>Select Your Camera</v-toolbar-title>
 
         </v-toolbar>
 
@@ -53,7 +56,8 @@
       </v-card>
     </v-dialog>
 
-  </div>
+    </v-col>
+  </v-row>
 </template>
 
 <style scoped>
