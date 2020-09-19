@@ -57,6 +57,13 @@ export default {
   name: 'SideBar',
   props: {
     drawer: Boolean,
+    token: String,
+  },
+
+  methods: {
+    logout() {
+      this.$root.logout();
+    },
   },
 };
 </script>

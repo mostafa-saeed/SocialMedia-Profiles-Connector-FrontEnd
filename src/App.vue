@@ -1,7 +1,7 @@
 <template>
   <v-app>
 
-    <SideBar :drawer="drawer" />
+    <SideBar :drawer.sync="drawer" :token="token" />
 
     <v-app-bar app color="primary" dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
@@ -58,6 +58,7 @@ export default {
 
   created() {
     this.$root.login = this.login;
+    this.$root.logout = this.logout;
   },
 
   components: {
