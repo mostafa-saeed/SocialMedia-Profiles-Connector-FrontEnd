@@ -8,6 +8,8 @@
         </v-toolbar>
         <v-card-text>
           <v-form v-model="isValid">
+            <v-progress-linear indeterminate color="primary" v-if="loading"></v-progress-linear>
+
             <v-text-field
               label="Login"
               name="login"
@@ -30,7 +32,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" @click="submit" :disabled="!isValid">Login</v-btn>
+          <v-btn color="primary" @click="submit" :disabled="!isValid || loading">Login</v-btn>
         </v-card-actions>
       </v-card>
     </v-col>
@@ -47,6 +49,7 @@ export default {
     login: '',
     password: '',
     isValid: false,
+    loading: false,
     validationRules: {
       login: [
         (v) => !!v || 'Username/Email is required',
@@ -61,15 +64,19 @@ export default {
   methods: {
     async submit(e) {
       e.preventDefault();
+      this.loading = true;
+
       try {
         const { login, password } = this;
         const { token, user } = await sendRequest('POST', 'users/login', {
           login, password,
         });
+        this.loading = false;
 
         this.$root.login(token, user);
       } catch (error) {
         alert(error);
+        this.loading = false;
       }
     },
   },

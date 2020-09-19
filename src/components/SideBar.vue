@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer v-model="drawer" app>
+  <v-navigation-drawer v-model="drawer" :stateless="true" app>
     <v-list dense>
 
       <v-list-item link to="/">

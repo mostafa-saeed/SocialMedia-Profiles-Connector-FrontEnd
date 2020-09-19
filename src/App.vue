@@ -6,6 +6,13 @@
     <v-app-bar app color="primary" dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>SocialMedia Profiles Connector</v-toolbar-title>
+
+      <v-spacer></v-spacer>
+
+      <v-btn href="#" icon large @click="toggleDarkMode">
+        <v-icon>mdi-brightness-6</v-icon>
+      </v-btn>
+
     </v-app-bar>
 
     <v-main>
@@ -53,6 +60,10 @@ export default {
       setAuthentication(token, user);
 
       this.$router.push({ name: 'Home' });
+    },
+
+    toggleDarkMode() {
+      this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
     },
   },
 

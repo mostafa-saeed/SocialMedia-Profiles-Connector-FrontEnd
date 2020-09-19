@@ -8,6 +8,8 @@
         </v-toolbar>
         <v-card-text>
           <v-form v-model="isValid">
+            <v-progress-linear indeterminate color="primary" v-if="loading"></v-progress-linear>
+
             <v-text-field
               label="Username"
               name="username"
@@ -69,6 +71,7 @@ export default {
       password: '',
       repassword: '',
       isValid: false,
+      loading: false,
       validationRules: {
         username: [
           (v) => !!v || 'Username is required',
@@ -94,15 +97,19 @@ export default {
   methods: {
     async submit(e) {
       e.preventDefault();
+      this.loading = true;
+
       try {
         const { username, email, password } = this;
         const { token, user } = await sendRequest('POST', 'users', {
           username, email, password,
         });
+        this.loading = false;
 
         this.$root.login(token, user);
       } catch (error) {
         alert(error);
+        this.loading = false;
       }
     },
   },
