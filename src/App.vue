@@ -37,6 +37,8 @@ import {
   getToken, getUser, removeAuthentication, setAuthentication,
 } from './services/auth';
 
+const darkMode = localStorage.getItem('darkMode');
+
 export default {
   name: 'App',
 
@@ -64,12 +66,14 @@ export default {
 
     toggleDarkMode() {
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
+      localStorage.setItem('darkMode', this.$vuetify.theme.dark || '');
     },
   },
 
   created() {
     this.$root.login = this.login;
     this.$root.logout = this.logout;
+    this.$vuetify.theme.dark = darkMode;
   },
 
   components: {
