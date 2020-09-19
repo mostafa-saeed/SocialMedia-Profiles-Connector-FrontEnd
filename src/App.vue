@@ -9,7 +9,7 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn href="#" icon large @click="toggleDarkMode">
+      <v-btn icon large @click="toggleDarkMode">
         <v-icon>mdi-brightness-6</v-icon>
       </v-btn>
 
