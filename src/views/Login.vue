@@ -43,6 +43,16 @@
 <script>
 import sendRequest from '@/services/api';
 
+const validationRules = {
+  login: [
+    (v) => !!v || 'Username/Email is required',
+  ],
+  password: [
+    (v) => !!v || 'Password is required',
+    (v) => (v && v.length >= 8) || 'Password must have 8+ characters',
+  ],
+};
+
 export default {
   name: 'Login',
   data: () => ({
@@ -50,15 +60,7 @@ export default {
     password: '',
     isValid: false,
     loading: false,
-    validationRules: {
-      login: [
-        (v) => !!v || 'Username/Email is required',
-      ],
-      password: [
-        (v) => !!v || 'Password is required',
-        (v) => (v && v.length >= 8) || 'Password must have 8+ characters',
-      ],
-    },
+    validationRules,
   }),
 
   methods: {
@@ -75,8 +77,13 @@ export default {
 
         this.$root.login(token, user);
       } catch (error) {
-        alert(error);
         this.loading = false;
+
+        if (error.name === 'API_ERROR') {
+          this.$root.showErrorMessage(error.message);
+        } else {
+          this.$root.showErrorMessage('Something went wrong');
+        }
       }
     },
   },

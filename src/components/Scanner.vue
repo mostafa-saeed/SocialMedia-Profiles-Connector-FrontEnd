@@ -94,13 +94,6 @@ const getImageData = (image) => {
   return context.getImageData(0, 0, canvas.width, canvas.height);
 };
 
-const loadFileError = () => {
-  alert('Could not load this file');
-};
-
-fileReader.onerror = loadFileError;
-img.onerror = loadFileError;
-
 export default {
   name: 'Scanner',
   data: () => ({
@@ -121,7 +114,7 @@ export default {
       if (result) {
         alert(result.data);
       } else {
-        alert('No QR was found');
+        this.$root.showErrorMessage('No QR was found');
       }
     },
 
@@ -138,8 +131,7 @@ export default {
         }
         this.startTimer();
       } catch (error) {
-        console.error(error);
-        alert('Could not start stream');
+        this.$root.showErrorMessage('Could not start stream');
       }
     },
 
@@ -204,6 +196,11 @@ export default {
     if (state === 'granted') {
       await this.loadDevices();
     }
+  },
+
+  created() {
+    fileReader.onerror = () => this.$root.showErrorMessage('Failed to load this file');
+    img.onerror = () => this.$root.showErrorMessage('Failed to load this file');
   },
 
 };

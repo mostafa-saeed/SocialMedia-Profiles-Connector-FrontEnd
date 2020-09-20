@@ -10,12 +10,23 @@
       <v-spacer></v-spacer>
 
       <v-btn icon large @click="toggleDarkMode">
-        <v-icon>mdi-brightness-6</v-icon>
+        <v-icon>mdi-invert-colors</v-icon>
       </v-btn>
 
     </v-app-bar>
 
     <v-main>
+
+      <v-snackbar color="error" timeout="-1" v-model="showMessage">
+        {{ message }}
+
+        <template v-slot:action="{ attrs }">
+          <v-btn dark text v-bind="attrs" @click="showMessage=false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </template>
+
+      </v-snackbar>
       <v-container class="fill-height" fluid>
         <router-view :token="token" :user="user" />
       </v-container>
@@ -44,6 +55,8 @@ export default {
 
   data: () => ({
     drawer: false,
+    showMessage: false,
+    message: '',
     token: getToken(),
     user: getUser(),
   }),
@@ -73,6 +86,10 @@ export default {
   created() {
     this.$root.login = this.login;
     this.$root.logout = this.logout;
+    this.$root.showErrorMessage = (message) => {
+      this.message = message;
+      this.showMessage = true;
+    };
     this.$vuetify.theme.dark = darkMode;
   },
 

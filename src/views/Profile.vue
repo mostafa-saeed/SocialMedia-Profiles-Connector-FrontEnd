@@ -22,7 +22,11 @@ export default {
       const { username } = this.$route.params.username ? this.$route.params : this.user;
       this.userProfile = await sendRequest('GET', `users/${username}`);
     } catch (error) {
-      alert(error);
+      if (error.name === 'API_ERROR') {
+        this.$root.showErrorMessage(error.message);
+      } else {
+        this.$root.showErrorMessage('Something went wrong');
+      }
       this.$router.push({ name: 'Home' });
     }
   },
