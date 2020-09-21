@@ -77,6 +77,11 @@ export default {
       this.$router.push({ name: 'Home' });
     },
 
+    showErrorMessage(message) {
+      this.message = message;
+      this.showMessage = true;
+    },
+
     toggleDarkMode() {
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
       localStorage.setItem('darkMode', this.$vuetify.theme.dark || '');
@@ -86,11 +91,9 @@ export default {
   created() {
     this.$root.login = this.login;
     this.$root.logout = this.logout;
-    this.$root.showErrorMessage = (message) => {
-      this.message = message;
-      this.showMessage = true;
-    };
+    this.$root.showErrorMessage = this.showErrorMessage;
     this.$vuetify.theme.dark = darkMode;
+    console.log('testing', this.$router);
   },
 
   components: {

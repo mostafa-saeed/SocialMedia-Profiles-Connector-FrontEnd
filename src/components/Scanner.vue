@@ -114,7 +114,7 @@ export default {
       if (result) {
         alert(result.data);
       } else {
-        this.$root.showErrorMessage('No QR was found');
+        this.$router.app.showErrorMessage('No QR was found');
       }
     },
 
